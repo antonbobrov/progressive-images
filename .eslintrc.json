@@ -1,3 +1,26 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": [
+    "airbnb",
+    "next/core-web-vitals"
+  ],
+  "rules": {
+    "react/jsx-filename-extension": [1, { "extensions": [".tsx"] }],
+    "react/jsx-props-no-spreading": "off",
+    "react/function-component-definition": ["off"],
+    "indent": [
+        "error",
+        4,
+        {
+            "SwitchCase": 1
+        }
+    ],
+    "react/jsx-indent-props": [
+        "error",
+        4
+    ],
+    "react/jsx-indent": [
+        "error",
+        4
+    ]
+  }
 }
