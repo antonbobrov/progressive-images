@@ -21,6 +21,16 @@
     "react/jsx-indent": [
         "error",
         4
+    ],
+    "import/extensions": [
+        "error",
+        "ignorePackages",
+        {
+            "js": "never",
+            "ts": "never",
+            "jsx": "never",
+            "tsx": "never"
+        }
     ]
   }
 }
