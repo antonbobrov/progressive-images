@@ -171,7 +171,7 @@ const Home: NextPage = () => {
                                 value="true"
                                 id="checkbox-avif"
                                 name="avif"
-                                // defaultChecked
+                                defaultChecked
                             />
                             <label
                                 className="form-check-label"
