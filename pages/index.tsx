@@ -7,7 +7,36 @@ import {
 
 const Home: NextPage = () => {
     const [isLoading, setIsLoading] = useState(false);
+    const [outputFilesJson, setOutputFilesJson] = useState('');
 
+    /**
+     * Form change handler
+     */
+    const handleFormChange = useCallback((e: FormEvent) => {
+        const form = e.currentTarget as HTMLFormElement;
+        const formData = new FormData(form);
+
+        const useJpeg = !!formData.get('jpeg');
+        const useWebP = !!formData.get('webp');
+        const useAvif = !!formData.get('avif');
+
+        const inputFiles = formData.getAll('files') as File[];
+        const outputFiles = inputFiles.map((file) => {
+            const fileNameParts = file.name.split('.') || [];
+            fileNameParts.pop();
+            const fileName = fileNameParts.join('.');
+            return {
+                jpeg: useJpeg ? `${fileName}.jpeg` : '',
+                webp: useWebP ? `${fileName}.webp` : '',
+                avif: useAvif ? `${fileName}.avif` : '',
+            };
+        });
+        setOutputFilesJson(JSON.stringify(outputFiles));
+    }, []);
+
+    /**
+     * Form submit handler
+     */
     const submit = useCallback((e: FormEvent) => {
         setIsLoading(true);
 
@@ -86,6 +115,9 @@ const Home: NextPage = () => {
                     onSubmit={(e) => {
                         e.preventDefault();
                         submit(e);
+                    }}
+                    onChange={(e) => {
+                        handleFormChange(e);
                     }}
                 >
 
@@ -192,6 +224,19 @@ const Home: NextPage = () => {
                     </button>
 
                 </form>
+
+                {outputFilesJson
+                    ? (
+                        <>
+                            <h2 className="mt-4">
+                                JSON
+                            </h2>
+                            <pre className="mt-2">
+                                <code>{outputFilesJson}</code>
+                            </pre>
+
+                        </>
+                    ) : '' }
 
             </main>
         </div>
