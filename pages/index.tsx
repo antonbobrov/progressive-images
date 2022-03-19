@@ -25,11 +25,21 @@ const Home: NextPage = () => {
             const fileNameParts = file.name.split('.') || [];
             fileNameParts.pop();
             const fileName = fileNameParts.join('.');
-            return {
-                jpeg: useJpeg ? `${fileName}.jpeg` : '',
-                webp: useWebP ? `${fileName}.webp` : '',
-                avif: useAvif ? `${fileName}.avif` : '',
-            };
+            const result: {
+                jpeg?: string;
+                webp?: string;
+                avif?: string;
+            } = {};
+            if (useJpeg) {
+                result.jpeg = `${fileName}.jpeg`;
+            }
+            if (useWebP) {
+                result.webp = `${fileName}.webp`;
+            }
+            if (useAvif) {
+                result.avif = `${fileName}.avif`;
+            }
+            return result;
         });
         setOutputFilesJson(JSON.stringify(outputFiles));
     }, []);
