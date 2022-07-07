@@ -16,6 +16,7 @@ const Home: NextPage = () => {
         const form = e.currentTarget as HTMLFormElement;
         const formData = new FormData(form);
 
+        const usePng = !!formData.get('png');
         const useJpeg = !!formData.get('jpeg');
         const useWebP = !!formData.get('webp');
         const useAvif = !!formData.get('avif');
@@ -26,10 +27,14 @@ const Home: NextPage = () => {
             fileNameParts.pop();
             const fileName = fileNameParts.join('.');
             const result: {
+                png?: string;
                 jpeg?: string;
                 webp?: string;
                 avif?: string;
             } = {};
+            if (usePng) {
+                result.png = `${fileName}.png`;
+            }
             if (useJpeg) {
                 result.jpeg = `${fileName}.jpeg`;
             }
@@ -140,7 +145,7 @@ const Home: NextPage = () => {
                             name="files"
                             id="files"
                             multiple
-                            accept=".jpg,.png,.jpeg"
+                            accept=".png,.jpg,.png,.jpeg"
                             required
                         />
                     </label>
@@ -174,6 +179,22 @@ const Home: NextPage = () => {
                     </div>
 
                     <div className="mt-3">
+                        <div className="form-check">
+                            <input
+                                className="form-check-input"
+                                type="checkbox"
+                                value="true"
+                                id="checkbox-png"
+                                name="png"
+                                defaultChecked
+                            />
+                            <label
+                                className="form-check-label"
+                                htmlFor="checkbox-png"
+                            >
+                                Use png
+                            </label>
+                        </div>
                         <div className="form-check">
                             <input
                                 className="form-check-input"

@@ -18,6 +18,7 @@ type Data = {
 type Settings = {
     quality: number;
     width: number | undefined;
+    usePng: boolean;
     useJpeg: boolean;
     useWebP: boolean;
     useAvif: boolean;
@@ -31,6 +32,7 @@ type ProcessedSharpFile = {
 type ProcessedFile = {
     fileName: string;
     originalFilename: string;
+    png: ProcessedSharpFile;
     jpeg: ProcessedSharpFile;
     webp: ProcessedSharpFile;
     avif: ProcessedSharpFile;
@@ -39,11 +41,17 @@ type ProcessedFile = {
 async function processSharpFile(
     file: formidable.File,
     settings: Settings,
-    format: 'jpeg' | 'webp' | 'avif',
+    format: 'png' | 'jpeg' | 'webp' | 'avif',
     fileName: string,
 ): Promise<ProcessedSharpFile> {
     let sharpFile = sharp(file.filepath);
     switch (format) {
+        case 'png':
+            sharpFile = sharpFile.png({
+                quality: settings.quality,
+                progressive: true,
+            });
+            break;
         case 'jpeg':
             sharpFile = sharpFile.jpeg({
                 quality: settings.quality,
@@ -93,6 +101,7 @@ async function processFile(
     return {
         fileName,
         originalFilename: file.originalFilename || fileName,
+        png: settings.usePng ? await processSharpFile(file, settings, 'png', fileName) : undefined,
         jpeg: settings.useJpeg ? await processSharpFile(file, settings, 'jpeg', fileName) : undefined,
         webp: settings.useWebP ? await processSharpFile(file, settings, 'webp', fileName) : undefined,
         avif: settings.useAvif ? await processSharpFile(file, settings, 'avif', fileName) : undefined,
@@ -148,6 +157,7 @@ export default async function handler(
             ? Math.max(parseInt(formData.fields.width as string, 10), 1)
             : undefined,
         useJpeg: typeof formData.fields.jpeg === 'string',
+        usePng: typeof formData.fields.png === 'string',
         useWebP: typeof formData.fields.webp === 'string',
         useAvif: typeof formData.fields.avif === 'string',
     };
@@ -178,6 +188,9 @@ export default async function handler(
     const zip = new AdmZip();
     processedFiles.forEach((currentFile) => {
         const file = currentFile!;
+        if (file.png) {
+            zip.addFile(file.png.outputFileName, file.png.buffer);
+        }
         if (file.jpeg) {
             zip.addFile(file.jpeg.outputFileName, file.jpeg.buffer);
         }
